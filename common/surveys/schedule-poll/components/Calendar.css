@@ -1,0 +1,66 @@
+.calendar-grid {
+    display: inline-grid;
+    grid-template-columns: repeat(7, 1fr);
+    color: var(--color-fg);
+    user-select: none;
+    row-gap: 24px;
+
+    .control-bar {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+
+        .month-name {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        > button {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: inherit;
+        }
+    }
+
+    .day-header {
+        padding: 10px 8px;
+        text-align: center;
+    }
+
+    .date-cell {
+        position: relative;
+        cursor: pointer;
+        height: 32px;
+        width: 32px;
+        
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &.off-current-month {
+            cursor: default;
+            opacity: .6;
+        }
+
+        &::before {
+            content: '';
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            position: absolute;
+            
+            border: 2px solid var(--color-fg);
+            transition: opacity .2s, border .2s;
+            opacity: 0;
+        }
+
+        &:hover::before { opacity: .3; }
+        &.selected::before { opacity: 1; }
+
+        &.selected:hover::before {
+            border: 2px solid var(--color-error);
+        }
+    }
+}

@@ -1,0 +1,71 @@
+:host {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+main {
+    gap: 64px;
+    display: flex;
+    padding-top: 96px;
+    align-items: stretch;
+    flex-direction: column;
+
+    color: white;
+    background-color: #202020;
+
+    h1 {
+        font-size: 6.5em;
+        text-align: center;
+        margin-bottom: 16px;
+        font-family: "Marker Felt", "Segoe Print", cursive;
+    }
+
+    .create-survey button {
+        font-weight: bold;
+        font-size: 1.5em;
+        width: 100%;
+    }
+}
+
+.join-by-id {
+    gap: 8px;
+    display: flex;
+    font-size: 1.5em;
+    flex-direction: row;
+
+    > input, > button {
+        border-radius: 32px;
+        padding: 16px 32px;
+    }
+
+    > input {
+        font-family: monospace;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+    }
+
+    > button {
+        font-weight: bold;
+        font-size: inherit;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+}
+
+.or-divider {
+    gap: 16px;
+    display: flex;
+    align-items: center;
+
+    color: #aaa;
+    font-size: 0.9em;
+    letter-spacing: 2px;
+
+    &::before,
+    &::after {
+        flex: 1;
+        content: "";
+        border-top: 1px solid darkgrey;
+    }
+}

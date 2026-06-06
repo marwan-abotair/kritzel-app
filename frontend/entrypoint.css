@@ -1,0 +1,73 @@
+:root {
+	--easing-default: cubic-bezier(0.22, 1, 0.36, 1);
+
+	--color-fg: #fefefe;
+	--color-bg: #212121;
+	--color-error: #ff6b6b;
+	--color-border: #555353;
+
+	--color-input-bg: #303030;
+}
+
+body {
+	background-color: var(--color-bg);
+	font-family: sans-serif;
+	color: var(--color-fg);
+}
+
+button {
+	border: none;
+	padding: .6em 1em;
+	border-radius: 1.2em;
+    color: var(--color-bg);
+    background-color: var(--color-fg);
+    transition: background-color .3s var(--easing-default), box-shadow .3s var(--easing-default);
+
+	&:disabled {
+		opacity: .4;
+		cursor: not-allowed;
+	}
+
+	&:hover:not(.disabled) {
+ 	   background-color: #cecece;
+	}
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+textarea {
+	padding: 8px;
+	font-size: .9em;
+	border-radius: 12px;
+	color: var(--color-fg);
+	font-family: sans-serif;
+	background-color: var(--color-input-bg);
+	border: 1px solid var(--color-border);
+}
+
+.panel {
+	border: 2px solid var(--color-border);
+    border-radius: 12px;
+	padding: 16px;
+}
+
+@keyframes slide-in-to-bottom {
+	from {
+		transform: translateY(-16px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}

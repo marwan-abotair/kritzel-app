@@ -1,0 +1,29 @@
+.date-slot {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+
+    padding: 16px;
+    border-radius: 16px;
+    background-color: rgba(255, 255, 255, .03);
+    animation: slide-in-to-bottom .3s var(--easing-default) both;
+}
+
+.date {
+    background-color: #303030;
+    border-radius: 8px;
+    user-select: none;
+    color: #fefefe;
+    height: 20px;
+    padding: 8px;
+}
+
+.times {
+    gap: 8px;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+    border-left: 2px solid var(--color-border);
+    padding-left: 8px;
+}
