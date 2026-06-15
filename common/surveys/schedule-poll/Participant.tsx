@@ -21,12 +21,22 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 		}
 		return counts;
 	});
+	const isExpired = always(() => {
+    const deadline = props.survey.configuration.deadline;
+    return deadline ? new Date() > new Date(deadline) : false;
+});
 	const highestVoteCount = always(() => Math.max(0, ...Object.values<number>(slotVoteCounts)));
 
 	return <main>
 		<section class="meta panel">
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
 			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
+			{props.survey.configuration.deadline && (
+			<p class="deadline">
+				Abstimmung läuft bis:{" "}
+				{new Date(props.survey.configuration.deadline).toLocaleString("de-DE")}
+			</p>
+)}
 			<AutoSaveLabel />
 		</section>
 
@@ -89,7 +99,7 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 
 								<select
 									class="vote"
-									disabled={!this.participantName.val.trim()}
+									disabled={!this.participantName.val.trim() || isExpired.val}
 									value={this.selectedOptions[key]}
 								>
 									{!this.selectedOptions[key] && <option value="">Vote</option>}

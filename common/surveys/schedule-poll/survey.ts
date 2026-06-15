@@ -32,6 +32,7 @@ export default {
             { icon: "❌️", label: "No" },
         ],
         dates: [],
+        deadline: undefined,
     },
 
     editorView: EditorView,
