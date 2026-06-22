@@ -3,6 +3,7 @@ import { ParticipantProps } from "common/surveys/surveys.ts";
 
 import { AutoSaveLabel } from "common/components/AutoSaveLabel.tsx";
 import { emojiSentiments } from "./static/emoji-sentiments.ts";
+import { computeResult } from "./result.ts";
 import { formatDuration, Options } from "./survey.ts";
 import { SlotKey, slotKey, Vote } from "./types.ts";
 
@@ -27,6 +28,34 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 });
 	const highestVoteCount = always(() => Math.max(0, ...Object.values<number>(slotVoteCounts)));
 
+	// Bester Termin (3.6): wird automatisch nach Ablauf der Deadline ermittelt,
+	// ohne Eingriff des Initiators (AK3). Liefert den Slot-Key des Gewinners,
+	// oder null, wenn die Abstimmung noch läuft oder keine Stimmen vorliegen.
+	const bestSlotKey = always(() => {
+		if (!isExpired.val) return null;
+
+		const slotKeys: SlotKey[] = [];
+		for (const dateSlot of props.survey.configuration.dates)
+			for (const timeSlot of dateSlot.times)
+				slotKeys.push(slotKey(dateSlot, timeSlot));
+
+		return computeResult(slotKeys, props.survey.votes).bestSlot;
+	});
+
+	// Gewinner-Slot menschenlesbar formatieren ("Montag, 14. Juli, 18:00 – 19:00").
+	const formatBestSlot = (key: SlotKey): string => {
+		for (const dateSlot of props.survey.configuration.dates) {
+			for (const timeSlot of dateSlot.times) {
+				if (slotKey(dateSlot, timeSlot) !== key) continue;
+				const date = dateSlot.date.toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "long" });
+				const from = timeSlot.start.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+				const to = timeSlot.end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+				return `${date}, ${from} – ${to}`;
+			}
+		}
+		return "";
+	};
+
 	return <main>
 		<section class="meta panel">
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
@@ -39,6 +68,11 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 )}
 			<AutoSaveLabel />
 		</section>
+
+		{bestSlotKey.val && <section class="result panel">
+			<span class="result-label">Bester Termin</span>
+			<span class="result-slot">{formatBestSlot(bestSlotKey.val)}</span>
+		</section>}
 
 		<label class="name panel">
 			Your name
