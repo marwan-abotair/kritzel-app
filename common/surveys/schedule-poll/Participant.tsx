@@ -86,6 +86,13 @@ import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/
 										{timeSlot.end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
 									</span>
 									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
+									    <button
+        								class="calendar-export"
+        								type="button"
+        								onclick={() => this.exportSlot(dateSlot, timeSlot)}
+    									>
+        									In Kalender Speichern
+    									</button>
 								</div>
 
 								<select
@@ -100,9 +107,6 @@ import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/
 										</option>
 									)}
 								</select>
-								<button type="button" onclick={() => this.exportSlot(dateSlot, timeSlot)}>
-									In Kalender speichern
-								</button>
 
 								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
 									{slotVoteCounts[key]}
