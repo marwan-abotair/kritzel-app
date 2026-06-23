@@ -4,7 +4,8 @@ import { ParticipantProps } from "common/surveys/surveys.ts";
 import { AutoSaveLabel } from "common/components/AutoSaveLabel.tsx";
 import { emojiSentiments } from "./static/emoji-sentiments.ts";
 import { formatDuration, Options } from "./survey.ts";
-import { SlotKey, slotKey, Vote } from "./types.ts";
+import { ScheduleDate, ScheduleTime, SlotKey, slotKey, Vote } from "./types.ts";
+import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/ics.ts";
 
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
@@ -99,6 +100,9 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 										</option>
 									)}
 								</select>
+								<button type="button" onclick={() => this.exportSlot(dateSlot, timeSlot)}>
+									In Kalender speichern
+								</button>
 
 								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
 									{slotVoteCounts[key]}
@@ -161,5 +165,16 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 					})
 			)
 		});
+	}
+
+	private exportSlot(dateSlot: ScheduleDate,timeSlot:ScheduleTime) {
+		const title = this.properties.survey.configuration.title || "Kritzel termin";
+		
+		const start = toIcsDateTime(dateSlot.date,timeSlot.start);
+		const end = toIcsDateTime(dateSlot.date,timeSlot.end);
+		const icsText = createIcsEvent(title,start,end);
+
+		downloadIcsFile("termin.ics",icsText);
+		
 	}
 }
