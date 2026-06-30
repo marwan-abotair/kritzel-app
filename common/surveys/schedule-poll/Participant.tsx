@@ -73,6 +73,16 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 
 						{dateSlot.times.map(timeSlot => {
 							const key = slotKey(dateSlot, timeSlot);
+							const slotComments = Object.values(props.survey.votes)
+							    .flatMap(vote => {
+									const comment = vote.comments?.[key]?.trim();
+									if (!comment) return [];
+								
+							        return [{
+										name: vote.name,
+										comment,
+									}];
+							});
 
 							if (!(key in this.selectedOptions))
 								this.selectedOptions[key] = "";
@@ -124,6 +134,16 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 											{selectedOption?.icon ?? "–"}
 										</div>;
 									})}
+								</div>}
+
+								{slotComments.length > 0 && <div class="comments">
+									<div class="comments-title">Comments</div>
+									{slotComments.map(({ name, comment }) =>
+									    <div class="comment-entry">
+											<span class="comment-author">{name}:</span>
+											<span class="comment-text">{comment}</span>
+										</div>
+									)}
 								</div>}
 							</div>;
 						})}
