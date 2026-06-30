@@ -186,6 +186,12 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 	private updateSlotComments() {
 		const submittedComments = this.properties.survey.votes[datex.meta.caller.name]?.comments ?? {};
 		
+		for (const key of Object.keys(this.slotComments)) {
+			if (!(key in submittedComments)) {
+				this.slotComments[key] = "";
+			}
+		}
+		
 		for (const [key, comment] of Object.entries(submittedComments)) {
 			if (this.slotComments[key] === comment) continue;
 			this.slotComments[key] = comment;
