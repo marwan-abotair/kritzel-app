@@ -90,26 +90,28 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
 								</div>
 
-								<select
-									class="vote"
-									disabled={!this.participantName.val.trim()}
-									value={this.selectedOptions[key]}
-								>
-									{!this.selectedOptions[key] && <option value="">Vote</option>}
-									{props.survey.configuration.voteOptions.map(option =>
-										<option value={`${option.icon} ${option.label}`}>
-											{option.icon} {option.label}
-										</option>
-									)}
-								</select>
-
-								<input
-								    class="comment"
-									type="text"
-									placeholder="Optional comment"
-									disabled={!this.participantName.val.trim()}
-									value={this.slotComments[key]}
-								/>
+								<div class="choice">
+									<select
+									    class="vote"
+										disabled={!this.participantName.val.trim()}
+										value={this.selectedOptions[key]}
+									>
+										{!this.selectedOptions[key] && <option value="">Vote</option>}
+										{props.survey.configuration.voteOptions.map(option =>
+										    <option value={`${option.icon} ${option.label}`}>
+												{option.icon} {option.label}
+											</option>
+										)}
+									</select>
+									
+									<input
+									    class="comment"
+										type="text"
+										placeholder="Optional comment"
+										disabled={!this.participantName.val.trim()}
+										value={this.slotComments[key]}
+									/>
+								</div>
 
 								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
 									{slotVoteCounts[key]}
