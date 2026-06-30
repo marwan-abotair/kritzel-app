@@ -6,6 +6,8 @@ import { emojiSentiments } from "./static/emoji-sentiments.ts";
 import { formatDuration, Options } from "./survey.ts";
 import { SlotKey, slotKey, Vote } from "./types.ts";
 
+const MAX_COMMENT_LENGTH = 160;
+
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
 		const counts: Record<SlotKey, number> = {};
@@ -120,6 +122,8 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 										placeholder="Optional comment"
 										disabled={!this.participantName.val.trim()}
 										value={this.slotComments[key]}
+										maxlength={MAX_COMMENT_LENGTH}
+										onblur={() => this.submitVotes()}
 									/>
 								</div>
 
@@ -172,7 +176,6 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 		observe(this.properties.survey.votes, () =>  { this.updateSelectFriendlyOptionsObject(); this.updateSlotComments(); });
 		observe(this.selectedOptions, () => { this.submitVotes() });
 		observe(this.participantName, () => { this.submitVotes() });
-		observe(this.slotComments, () => { this.submitVotes() });
 	}
 
 	private updateSelectFriendlyOptionsObject() {
@@ -214,7 +217,8 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 			),
 			comments: Object.fromEntries(
 				Object.entries<string>(this.slotComments)
-					.filter(([_, value]) => value.trim() !== "")
+				    .map(([key, value]) => [key, value.trim().slice(0, MAX_COMMENT_LENGTH)])
+					.filter(([_, value]) => value !== "")
 			)
 		});
 	}
