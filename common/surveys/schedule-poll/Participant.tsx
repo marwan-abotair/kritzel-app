@@ -77,6 +77,9 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 							if (!(key in this.selectedOptions))
 								this.selectedOptions[key] = "";
 
+							if (!(key in this.slotComments))
+								this.slotComments[key] = "";
+
 							return <div class="slot">
 								<div class="time">
 									<span class="range">
@@ -99,6 +102,14 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 										</option>
 									)}
 								</select>
+
+								<input
+								    class="comment"
+									type="text"
+									placeholder="Optional comment"
+									disabled={!this.participantName.val.trim()}
+									value={this.slotComments[key]}
+								/>
 
 								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
 									{slotVoteCounts[key]}
