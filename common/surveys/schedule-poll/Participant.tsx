@@ -128,15 +128,18 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 	 * formatted as `"{icon} {label}"`
 	 */
 	selectedOptions = $<Record<string, string>>({});
+	slotComments = $<Record<string, string>>({});
 
 	protected override onCreate() {
 		if (this.properties.survey.votes[datex.meta.caller.name]?.name !== undefined) {
 			this.participantName.val = this.properties.survey.votes[datex.meta.caller.name].name;
 		}
 		this.updateSelectFriendlyOptionsObject();
-		observe(this.properties.survey.votes, () =>  { this.updateSelectFriendlyOptionsObject() });
+		this.updateSlotComments();
+		observe(this.properties.survey.votes, () =>  { this.updateSelectFriendlyOptionsObject(); this.updateSlotComments(); });
 		observe(this.selectedOptions, () => { this.submitVotes() });
 		observe(this.participantName, () => { this.submitVotes() });
+		observe(this.slotComments, () => { this.submitVotes() });
 	}
 
 	private updateSelectFriendlyOptionsObject() {
@@ -147,6 +150,16 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 		}
 	}
 
+	private updateSlotComments() {
+		const submittedComments = this.properties.survey.votes[datex.meta.caller.name]?.comments ?? {};
+		
+		for (const [key, comment] of Object.entries(submittedComments)) {
+			if (this.slotComments[key] === comment) continue;
+			this.slotComments[key] = comment;
+		}
+	}
+
+	
 	private async submitVotes() {
 		if (this.participantName.val.trim() === "") return;
 
@@ -159,6 +172,10 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 						const [icon, label] = value.split(" ", 2);
 						return [key, { icon, label }]
 					})
+			),
+			comments: Object.fromEntries(
+				Object.entries<string>(this.slotComments)
+					.filter(([_, value]) => value.trim() !== "")
 			)
 		});
 	}
