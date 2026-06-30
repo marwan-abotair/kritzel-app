@@ -8,6 +8,7 @@ export type VoteOption = {
 export type Vote = {
     name: string;
     slots: Record<SlotKey, VoteOption>;
+    comments: Record<SlotKey, string>;
 };
 
 export type Schedule = {
