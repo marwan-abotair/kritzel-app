@@ -75,7 +75,7 @@ const MAX_COMMENT_LENGTH = 160;
 
 						{dateSlot.times.map(timeSlot => {
 							const key = slotKey(dateSlot, timeSlot);
-							const slotComments = Object.values(props.survey.votes)
+							const visibleComments = Object.values(props.survey.votes)
 							    .flatMap(vote => {
 									const comment = vote.comments?.[key]?.trim();
 									if (!comment) return [];
@@ -140,9 +140,9 @@ const MAX_COMMENT_LENGTH = 160;
 									})}
 								</div>}
 
-								{slotComments.length > 0 && <div class="comments">
+								{visibleComments.length > 0 && <div class="comments">
 									<div class="comments-title">Comments</div>
-									{slotComments.map(({ name, comment }) =>
+									{visibleComments.map(({ name, comment }) =>
 									    <div class="comment-entry">
 											<span class="comment-author">{name}:</span>
 											<span class="comment-text">{comment}</span>
