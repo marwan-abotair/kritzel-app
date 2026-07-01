@@ -1,4 +1,5 @@
 import { Time } from "datex-core-legacy/types/time.ts";
+import { Calendar } from "common/surveys/schedule-poll/components/Calendar.tsx";
 
 export function createIcsEvent(title: string,start:string,end:string){
     return[
@@ -39,3 +40,70 @@ export function downloadIcsFile(filename:string,content:string){
     link.click();
     URL.revokeObjectURL(url);
 }
+
+export type CalendarBusyRange = {
+    start: Date;
+    end: Date;
+}
+
+export function parseIcsBusyRanges(content: string): CalendarBusyRange[] {
+    const lines = content
+        .replace(/\r?\n[ \t]/g, "")
+        .split(/\r?\n/);
+    
+    const ranges: CalendarBusyRange[] = [];
+    let inEvent = false;
+    let start: Date | undefined;
+    let end: Date | undefined;
+
+    for (const line of lines) {
+        if (line === "BEGIN:VEVENT") {
+            inEvent = true;
+            start = undefined;
+            end = undefined;
+            continue;
+        }
+        if (line === "END:VEVENT") {
+            if(start && end && end > start){
+                ranges.push({ start, end });
+            }
+            inEvent = false;
+            continue;
+        }
+        if(!inEvent){
+            continue;
+        }
+        const separatorIndex = line.indexOf(":");
+        if (separatorIndex === -1) continue;
+        const name = line.slice(0, separatorIndex).split(";")[0];
+        const value = line.slice(separatorIndex + 1);
+        if (name === "DTSTART") start = parseIcsDate(value);
+        if(name =="DTEND") end = parseIcsDate(value);
+    }
+    return ranges;
+}
+
+function parseIcsDate(value: string){
+    const match = value.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
+    if (!match) return undefined;
+    const [, year, month, day, hour = "00", minute = "00", second = "00", utc] = match;
+    if(utc){
+        return new Date(Date.UTC(
+            Number(year),
+            Number(month) - 1,
+            Number(day),
+            Number(hour),
+            Number(minute),
+            Number(second),
+        ));
+    }
+    return new Date(
+        Number(year),
+        Number(month) - 1,
+        Number(day),
+        Number(hour),
+        Number(minute),
+        Number(second),
+    );
+}
+

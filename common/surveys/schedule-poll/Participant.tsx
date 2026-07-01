@@ -5,8 +5,13 @@ import { AutoSaveLabel } from "common/components/AutoSaveLabel.tsx";
 import { emojiSentiments } from "./static/emoji-sentiments.ts";
 import { formatDuration, Options } from "./survey.ts";
 import { ScheduleDate, ScheduleTime, SlotKey, slotKey, Vote } from "./types.ts";
-import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/ics.ts";
-
+import {
+    createIcsEvent,
+    downloadIcsFile,
+    parseIcsBusyRanges,
+    toIcsDateTime,
+    type CalendarBusyRange,
+} from "common/calendar/ics.ts";
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
 		const counts: Record<SlotKey, number> = {};
@@ -29,12 +34,26 @@ import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
 			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
 			<AutoSaveLabel />
+			<button
+    		type="button"
+    		onclick={() => this.exportBestSlot()}
+			>
+    			In Kalender speichern
+			</button>
 		</section>
 
 		<label class="name panel">
 			Your name
 			<span class="hint">Required for voting</span>
 			<input type="text" value={this.participantName} />
+		</label>
+
+		<label class ="panel">
+			Kalender importieren
+			<input type="file"
+			accept=".ics,text/calendar"
+			onchange={(event) => this.importIcsFile(event)}
+			/>
 		</label>
 
 		<section class="slots panel">
@@ -86,13 +105,7 @@ import { createIcsEvent, toIcsDateTime, downloadIcsFile } from "common/calendar/
 										{timeSlot.end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
 									</span>
 									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
-									    <button
-        								class="calendar-export"
-        								type="button"
-        								onclick={() => this.exportSlot(dateSlot, timeSlot)}
-    									>
-        									In Kalender Speichern
-    									</button>
+									{this.isSlotBusy(dateSlot, timeSlot) && <span class="busy-label">Belegt</span>}
 								</div>
 
 								<select
@@ -137,6 +150,8 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 	 */
 	selectedOptions = $<Record<string, string>>({});
 
+	importedBusyRanges = $<CalendarBusyRange[]>([]);
+
 	protected override onCreate() {
 		if (this.properties.survey.votes[datex.meta.caller.name]?.name !== undefined) {
 			this.participantName.val = this.properties.survey.votes[datex.meta.caller.name].name;
@@ -180,5 +195,99 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 
 		downloadIcsFile("termin.ics",icsText);
 		
+	}
+	private exportBestSlot(){
+		let bestDateSlot: ScheduleDate | undefined;
+		let bestTimeSlot: ScheduleTime | undefined;
+		let bestCount = -1;
+
+		for(const dateSlot of this.properties.survey.configuration.dates){
+			for(const timeSlot of dateSlot.times){
+				const key = slotKey(dateSlot, timeSlot);
+				const count = Object.values(this.properties.survey.votes)
+				.filter(vote =>
+					typeof vote.slots[key] !== "undefined" &&
+					(emojiSentiments as Record<string, number | undefined>)[vote.slots[key].icon] !== -1
+				).length;
+					
+				if (count > bestCount) {
+					bestCount = count;
+					bestDateSlot = dateSlot;
+					bestTimeSlot = timeSlot;
+				}
+			}
+		}
+		if (!bestDateSlot || !bestTimeSlot || bestCount <= 0) {
+			alert("Es gibt noch keinen passenden Termin zum Exportieren.");
+			return;
+		}
+
+		this.exportSlot(bestDateSlot, bestTimeSlot);
+	}
+
+	private async importIcsFile(event: Event) {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+		const content = await file.text();
+		const ranges = parseIcsBusyRanges(content);
+		this.importedBusyRanges.splice(0, this.importedBusyRanges.length, ...ranges);
+		 this.applyCalendarAvailability();
+	}
+	private getSlotStartDate(dateSlot: ScheduleDate, timeSlot: ScheduleTime) {
+		return new Date(
+        dateSlot.date.getFullYear(),
+        dateSlot.date.getMonth(),
+        dateSlot.date.getDate(),
+        timeSlot.start.getHours(),
+        timeSlot.start.getMinutes(),
+        0,
+    );
+	}
+
+	private getSlotEndDate(dateSlot: ScheduleDate, timeSlot: ScheduleTime) {
+		return new Date(
+        dateSlot.date.getFullYear(),
+        dateSlot.date.getMonth(),
+        dateSlot.date.getDate(),
+        timeSlot.end.getHours(),
+        timeSlot.end.getMinutes(),
+        0,
+    );
+	}
+	private overlaps(startA: Date, endA: Date, startB: Date, endB: Date) {
+    	return startA < endB && endA > startB;
+	}
+	private isSlotBusy(dateSlot: ScheduleDate, timeSlot: ScheduleTime) {
+		const slotStart = this.getSlotStartDate(dateSlot, timeSlot);
+		const slotEnd = this.getSlotEndDate(dateSlot, timeSlot);
+
+		return this.importedBusyRanges.some(range =>
+			this.overlaps(slotStart, slotEnd, range.start, range.end)
+    );
+	}
+	private getNoOption() {
+		return this.properties.survey.configuration.voteOptions.find(option =>
+			(emojiSentiments as Record<string, number | undefined>)[option.icon] === -1
+			|| option.label.toLowerCase() === "no"
+			|| option.label.toLowerCase() === "nein"
+		);
+	}
+	private applyCalendarAvailability() {
+		const noOption = this.getNoOption();
+
+		if (!noOption) {
+			alert("Keine Nein-Option gefunden.");
+			return;
+		}
+
+		for (const dateSlot of this.properties.survey.configuration.dates) {
+			for (const timeSlot of dateSlot.times) {
+				if (!this.isSlotBusy(dateSlot, timeSlot)) continue;
+
+				const key = slotKey(dateSlot, timeSlot);
+				this.selectedOptions[key] = `${noOption.icon} ${noOption.label}`;
+			}
+		}
 	}
 }
