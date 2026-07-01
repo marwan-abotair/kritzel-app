@@ -33,3 +33,24 @@ export async function registerUser(username: string, passwordPlain: string): Pro
     return true;
 }
 
+export async function verifyUserLogin(username: string, passwordPlain: string): Promise<boolean> {
+    const cleanUsername = username.trim();
+    if (!StoredUser.usernameExists(cleanUsername)) return false;
+
+    try {
+        const user = StoredUser.getByUsername(cleanUsername);
+        
+        // same hashing process as before to compare the hashes
+        const encoder = new TextEncoder();
+        const data = encoder.encode(passwordPlain + "SichererSalt2026");
+        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+        const inputHash = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, "0"))
+            .join("");
+
+        return user._passwordHash === inputHash;
+    } catch {
+        return false;
+    }
+}
+
