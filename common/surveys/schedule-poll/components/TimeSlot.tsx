@@ -1,5 +1,6 @@
 import { Component, template } from "uix/components/Component.ts";
 import { Time } from "datex-core-legacy/types/time.ts";
+import { t } from "common/i18n/i18n.ts";
 
 type Props = {
     start: Ref<Time>;
@@ -23,14 +24,27 @@ type Props = {
     });
 
     return <div class="time-slot">
-        <input type="time" value={props.start} />
-        <input type="time" value={props.end} />
+        <input
+            type="time"
+            value={props.start}
+            aria-label={always(() => t("time_slot_start_label"))}
+        />
+        <input
+            type="time"
+            value={props.end}
+            aria-label={always(() => t("time_slot_end_label"))}
+        />
 
-        <div class={`duration ${durationText.val === "invalid" ? "invalid" : ""}`}>
+        <div class={`duration ${durationText.val === "invalid" ? "invalid" : ""}`} aria-live="polite">
             {durationText}
         </div>
 
-        <button type="button" class="remove" onclick={() => props.onRemove?.()}>✗</button>
+        <button
+            type="button"
+            class="remove"
+            onclick={() => props.onRemove?.()}
+            aria-label={always(() => t("time_slot_remove"))}
+        >✗</button>
     </div>;
 })
 export class TimeSlot extends Component<Props> {}

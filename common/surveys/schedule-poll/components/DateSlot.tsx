@@ -3,6 +3,7 @@ import { Component, template } from "uix/components/Component.ts";
 import { ScheduleDate, ScheduleTime } from "common/surveys/schedule-poll/types.ts";
 import { TimeSlot } from "common/surveys/schedule-poll/components/TimeSlot.tsx";
 import { Time } from "datex-core-legacy/types/time.ts";
+import { locale, t } from "common/i18n/i18n.ts";
 
 type Props = {
     scheduleDate: ScheduleDate;
@@ -11,11 +12,11 @@ type Props = {
 /**
  * Guesses the time range that is most likely to be chosen based
  * on the pre-existing time slots.
- * 
+ *
  * At least one time slot is required, otherwise a TypeError will
  * be thrown.
- * 
- * @param times 
+ *
+ * @param times
  * @param lastNTimes Only consider the last n time slots for prediction.
  * @throws TypeError if `times` is empty
  */
@@ -46,7 +47,7 @@ function predictNextTimeRange(times: ScheduleTime[], lastNTimes = 3) {
         predictedDuration = times[times.length - 1].end.getTime()
                             - times[times.length - 1].start.getTime();
     } else predictedDuration = mostCommonDuration[0];
-    
+
     if (times.length < 2) predictedDistance = 0;
     else if (mostCommonDistance[1] === 1) {
         predictedDistance = times[times.length - 1].start.getTime()
@@ -61,10 +62,22 @@ function predictNextTimeRange(times: ScheduleTime[], lastNTimes = 3) {
 
 @template(function (props) {
     return <div class="date-slot">
-        <div class="date">{props.scheduleDate.date.toLocaleDateString()}</div>
+        <div class="date">{always(() => props.scheduleDate.date.toLocaleDateString(locale()))}</div>
         <div class="times">
-            {props.scheduleDate.times.map((time, i) => <TimeSlot start={time.start} end={time.end} onRemove={() => props.scheduleDate.times.splice(i, 1)} />)}
-            <button type="button" class="primary" onclick={() => this.addTimeSlot()}>Add Time Slot</button>
+            {props.scheduleDate.times.map((time, i) =>
+                <TimeSlot
+                    start={time.start}
+                    end={time.end}
+                    onRemove={() => props.scheduleDate.times.splice(i, 1)}
+                />
+            )}
+            <button
+                type="button"
+                class="primary"
+                onclick={() => this.addTimeSlot()}
+            >
+                {always(() => t("date_slot_add_time"))}
+            </button>
         </div>
     </div>;
 })

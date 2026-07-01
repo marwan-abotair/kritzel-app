@@ -2,10 +2,13 @@ import { Component, template } from "uix/components/Component.ts";
 import { ALL_SURVEY_TYPES } from "common/surveys/all.ts";
 import { Survey } from "common/surveys/surveys.ts";
 import { Surveys } from "backend/data.ts";
+import { t } from "common/i18n/i18n.ts";
+import { LanguageSwitcher } from "common/components/LanguageSwitcher.tsx";
 
 @template(function () {
     return <main>
-        <h2>What would you like to create?</h2>
+        <LanguageSwitcher />
+        <h2>{always(() => t("create_survey_heading"))}</h2>
         <section>
             {ALL_SURVEY_TYPES.map(async (typeName) => {
                 const surveyDefinition = (await import(`common/surveys/${typeName}/survey.ts`)).default as Survey<unknown>;

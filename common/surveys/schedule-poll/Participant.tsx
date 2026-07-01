@@ -5,6 +5,7 @@ import { AutoSaveLabel } from "common/components/AutoSaveLabel.tsx";
 import { emojiSentiments } from "./static/emoji-sentiments.ts";
 import { formatDuration, Options } from "./survey.ts";
 import { SlotKey, slotKey, Vote } from "./types.ts";
+import { locale, t } from "common/i18n/i18n.ts";
 
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
@@ -23,34 +24,46 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 	});
 	const highestVoteCount = always(() => Math.max(0, ...Object.values<number>(slotVoteCounts)));
 
+	const nameInputId = "participant-name-input";
+
 	return <main>
 		<section class="meta panel">
-			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
-			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
+			<h1>{props.survey.configuration.title || always(() => t("schedule_default_title"))}</h1>
+			<p>{props.survey.configuration.description || always(() => t("schedule_default_description"))}</p>
 			<AutoSaveLabel />
 		</section>
 
-		<label class="name panel">
-			Your name
-			<span class="hint">Required for voting</span>
-			<input type="text" value={this.participantName} />
-		</label>
+		<div class="name panel">
+			<label for={nameInputId}>
+				{always(() => t("schedule_name_label"))}
+				<span class="hint">{always(() => t("schedule_name_required_hint"))}</span>
+			</label>
+			<input
+				id={nameInputId}
+				type="text"
+				value={this.participantName}
+				autocomplete="name"
+				aria-required="true"
+			/>
+		</div>
 
-		<section class="slots panel">
+		<section class="slots panel" aria-label={always(() => t("schedule_options_heading"))}>
 			<div class="schedule" style={`grid-template-columns: auto 1fr auto auto${
 				this.votersVisible.val ? ` repeat(${Object.keys(props.survey.votes).length}, auto)` : ""
 			}`}>
 				<div class="schedule-head">
-					<div class="heading">Options</div>
-					<div class="vote-heading">Your vote</div>
+					<div class="heading" aria-hidden="true">{always(() => t("schedule_options_heading"))}</div>
+					<div class="vote-heading" aria-hidden="true">{always(() => t("schedule_vote_heading"))}</div>
 					<button
 						class="toggle"
 						type="button"
+						aria-pressed={this.votersVisible.val}
+						aria-label={always(() => this.votersVisible.val ? t("schedule_hide_voters") : t("schedule_show_voters"))}
 						onclick={() => this.votersVisible.val = !this.votersVisible.val}
 					>
-						{this.votersVisible.val ? "👤 v" : "👤 >"}
+						{this.votersVisible.val ? "👤 ▲" : "👤 ▼"}
 					</button>
-					{this.votersVisible.val && <div class="names">
+					{this.votersVisible.val && <div class="names" aria-label={always(() => t("schedule_hide_voters"))}>
 						{Object.values(props.survey.votes).map(vote =>
 							<div class="voter">{vote.name}</div>
 						)}
@@ -59,15 +72,15 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 
 				{props.survey.configuration.dates.map(dateSlot =>
 					<div class="date">
-						<div class="badge" style={`grid-row: span ${dateSlot.times.length}`}>
+						<div class="badge" style={`grid-row: span ${dateSlot.times.length}`} aria-hidden="true">
 							<span class="weekday">
-								{dateSlot.date.toLocaleDateString("de-DE", { weekday: "short" })}
+								{always(() => dateSlot.date.toLocaleDateString(locale(), { weekday: "short" }))}
 							</span>
 							<span class="day">
-								{dateSlot.date.toLocaleDateString("de-DE", { day: "2-digit" })}
+								{always(() => dateSlot.date.toLocaleDateString(locale(), { day: "2-digit" }))}
 							</span>
 							<span class="month">
-								{dateSlot.date.toLocaleDateString("de-DE", { month: "short" }).toUpperCase()}
+								{always(() => dateSlot.date.toLocaleDateString(locale(), { month: "short" }).toUpperCase())}
 							</span>
 						</div>
 
@@ -77,22 +90,29 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 							if (!(key in this.selectedOptions))
 								this.selectedOptions[key] = "";
 
+							const startStr = always(() => timeSlot.start.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit" }));
+							const endStr = always(() => timeSlot.end.toLocaleTimeString(locale(), { hour: "2-digit", minute: "2-digit" }));
+							const dateStr = always(() => dateSlot.date.toLocaleDateString(locale(), { weekday: "long", day: "numeric", month: "long" }));
+							const durationStr = formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime());
+							const slotLabel = always(() => `${dateStr.val}, ${startStr.val} – ${endStr.val}, ${durationStr}`);
+
 							return <div class="slot">
-								<div class="time">
+								<div class="time" aria-hidden="true">
 									<span class="range">
-										{timeSlot.start.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+										{startStr}
 										{" – "}
-										{timeSlot.end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+										{endStr}
 									</span>
-									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
+									<span class="duration">{durationStr}</span>
 								</div>
 
 								<select
 									class="vote"
 									disabled={!this.participantName.val.trim()}
 									value={this.selectedOptions[key]}
+									aria-label={always(() => `${t("schedule_vote_heading")}: ${slotLabel.val}`)}
 								>
-									{!this.selectedOptions[key] && <option value="">Vote</option>}
+									{!this.selectedOptions[key] && <option value="">{always(() => t("schedule_vote_placeholder"))}</option>}
 									{props.survey.configuration.voteOptions.map(option =>
 										<option value={`${option.icon} ${option.label}`}>
 											{option.icon} {option.label}
@@ -100,11 +120,14 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 									)}
 								</select>
 
-								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
+								<div
+									class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}
+									aria-label={`${slotVoteCounts[key]}`}
+								>
 									{slotVoteCounts[key]}
 								</div>
 
-								{this.votersVisible.val && <div class="votes">
+								{this.votersVisible.val && <div class="votes" aria-hidden="true">
 									{Object.entries(props.survey.votes).map(([endpointId]) => {
 										const selectedOption = props.survey.votes[endpointId]?.slots[key];
 										return <div class="response">
