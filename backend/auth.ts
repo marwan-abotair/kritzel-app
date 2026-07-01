@@ -1,5 +1,15 @@
 import { StoredUser } from "common/auth/users.ts";
 
+// temporary password hashing helper for prototype auth flow 
+async function hashPassword(password: string): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password + "SichererSalt2026");
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+}
 
 function validateUsername(username: string): boolean {
     const clean = username.trim();
@@ -14,19 +24,14 @@ export async function registerUser(username: string, passwordPlain: string): Pro
 
     // TODO: use a deno crypto library for actual password hashing (e.g. Argon2/scrypt)
     // a placeholder hash is sufficient to test the flow
-    const encoder = new TextEncoder();
-    const data = encoder.encode(passwordPlain + "SichererSalt2026");
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const passwordHash = Array.from(new Uint8Array(hashBuffer))
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("");
+    const passwordHash = await hashPassword(passwordPlain);
 
     const generatedId = crypto.randomUUID();
 
     StoredUser.init({
         id: generatedId,
         username: cleanUsername,
-        passwordHash: passwordHash,
+        passwordHash,
         surveyIds: []
     });
 
@@ -40,13 +45,7 @@ export async function verifyUserLogin(username: string, passwordPlain: string): 
     try {
         const user = StoredUser.getByUsername(cleanUsername);
         
-        // same hashing process as before to compare the hashes
-        const encoder = new TextEncoder();
-        const data = encoder.encode(passwordPlain + "SichererSalt2026");
-        const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-        const inputHash = Array.from(new Uint8Array(hashBuffer))
-            .map(b => b.toString(16).padStart(2, "0"))
-            .join("");
+        const inputHash = await hashPassword(passwordPlain);
 
         return user._passwordHash === inputHash;
     } catch {
