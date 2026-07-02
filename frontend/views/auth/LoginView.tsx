@@ -1,6 +1,6 @@
 import { Component, template } from "uix/components/Component.ts";
 import { AuthEndpoint } from "backend/auth.ts";
-import "./LoginView.css";
+import "./AuthView.css";
 
 @template(function () {
     return <main class="panel auth-page">

@@ -60,4 +60,10 @@
 			}
 		}
 	}
+	
+	.auth-success {
+		color: #4ade80;
+		font-size: 0.9em;
+		font-weight: 600;
+	}
 }
