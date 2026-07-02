@@ -28,13 +28,13 @@ const MAX_COMMENT_LENGTH = 160;
 	return <main>
 		<section class="meta panel">
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
-			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
+			<p>{props.survey.configuration.description || "Bitte stimme für die Zeitfenster ab, die dir passen."}</p>
 			<AutoSaveLabel />
 		</section>
 
 		<label class="name panel">
-			Your name
-			<span class="hint">Required for voting</span>
+			Dein Name
+			<span class="hint">Erforderlich für die Abstimmung</span>
 			<input type="text" value={this.participantName} />
 		</label>
 
@@ -43,8 +43,8 @@ const MAX_COMMENT_LENGTH = 160;
 				this.votersVisible.val ? ` repeat(${Object.keys(props.survey.votes).length}, auto)` : ""
 			}`}>
 				<div class="schedule-head">
-					<div class="heading">Options</div>
-					<div class="vote-heading">Your vote</div>
+					<div class="heading">Optionen</div>
+					<div class="vote-heading">Deine Stimme</div>
 					<button
 						class="toggle"
 						type="button"
@@ -108,7 +108,7 @@ const MAX_COMMENT_LENGTH = 160;
 										disabled={!this.participantName.val.trim()}
 										value={this.selectedOptions[key]}
 									>
-										{!this.selectedOptions[key] && <option value="">Vote</option>}
+										{!this.selectedOptions[key] && <option value="">Abstimmen</option>}
 										{props.survey.configuration.voteOptions.map(option =>
 										    <option value={`${option.icon} ${option.label}`}>
 												{option.icon} {option.label}
@@ -119,9 +119,9 @@ const MAX_COMMENT_LENGTH = 160;
 									<input
 									    class="comment"
 										type="text"
-										placeholder="Optional comment"
-										aria-label="Optional comment for this time slot"
-										title="Optional comment for this time slot"
+										placeholder="Optionaler Kommentar"
+										aria-label="Optionaler Kommentar für diesen Zeitraum"
+										title="Optionaler Kommentar für diesen Zeitraum"
 										disabled={!this.participantName.val.trim()}
 										value={this.slotComments[key]}
 										maxlength={MAX_COMMENT_LENGTH}
@@ -143,7 +143,7 @@ const MAX_COMMENT_LENGTH = 160;
 								</div>}
 
 								{visibleComments.length > 0 && <div class="comments">
-									<div class="comments-title">Comments</div>
+									<div class="comments-title">Kommentare</div>
 									{visibleComments.map(({ name, comment }) =>
 									    <div class="comment-entry">
 											<span class="comment-author">{name}:</span>
