@@ -1,5 +1,6 @@
 import { Component, template } from "uix/components/Component.ts";
 import { AuthEndpoint } from "backend/auth.ts";
+import { AppState } from "frontend/appstate.ts";
 import "./AuthView.css";
 
 @template(function () {
@@ -53,7 +54,8 @@ export class LoginView extends Component {
 
 		const response = await AuthEndpoint.verifyUserLogin(this.username.val, this.password.val);
 
-		if (response.success) {
+		if (response.success && response.userId && response.username) {
+			AppState.setSession({ id: response.userId, username: response.username });
 			window.location.href = "/";
 		} else {
 			if (response.error === "Login failed") {

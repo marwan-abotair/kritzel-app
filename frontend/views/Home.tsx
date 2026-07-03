@@ -1,12 +1,25 @@
 import { Component, template } from "uix/components/Component.ts";
+import { AppState } from "frontend/appstate.ts";
 
-@template(function () {
-    return <main class="home-layout">
+@template(function (this: Home) {
+    return <main>
+		<div class="auth-status-bar">
+			{always(() => AppState.currentUser.val ? 
+				<div>
+					<span>Eingeloggt als <strong>{AppState.currentUser.val.username}</strong></span>
+					<button type="button" onclick={() => AppState.clearSession()}>Ausloggen</button>
+				</div>
+				:
+				<div>
+					<a href="/login">Anmelden</a>
+				</div>
+			)}
+		</div>
         <h1>Kritzel</h1>
         <div class="join-by-id">
             <input
                 type="text"
-                placeholder="Schedule ID"
+                placeholder="Termin ID"
                 value={this.surveyId.val}
                 maxlength={6}
             />
@@ -17,14 +30,14 @@ import { Component, template } from "uix/components/Component.ts";
                 onclick={() => window.location.href = `/${this.surveyId.val.toLowerCase()}`}
                 disabled={!this.idSubmittable.val}
             >
-                Open Schedule
+                Termin öffnen
             </button>
         </div>
 
-        <div class="or-divider">OR</div>
+        <div class="or-divider">ODER</div>
 
         <a href="/create-survey" class="create-survey">
-            <button type="button">Create Schedule</button>
+            <button type="button">Termin erstellen</button>
         </a>
     </main>;
 })
