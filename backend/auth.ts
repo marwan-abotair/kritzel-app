@@ -1,5 +1,7 @@
 import { StoredUser } from "common/auth/users.ts";
 
+
+//TODO: replace with actual password hashing algorithm
 async function hashPassword(password: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(password + "SichererSalt2026");
