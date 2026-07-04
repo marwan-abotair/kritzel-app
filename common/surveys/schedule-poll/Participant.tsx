@@ -26,13 +26,13 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 	return <main>
 		<section class="meta panel">
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
-			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
+			<p>{props.survey.configuration.description || "Bitte stimmen Sie für die Slots ab, die zu Ihren Präferenzen passen."}</p>
 			<AutoSaveLabel />
 		</section>
 
 		<label class="name panel">
-			Your name
-			<span class="hint">Required for voting</span>
+			Ihr Name
+			<span class="hint">Erforderlich für die Abstimmung</span>
 			<input type="text" value={this.participantName} />
 		</label>
 
@@ -41,8 +41,8 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 				this.votersVisible.val ? ` repeat(${Object.keys(props.survey.votes).length}, auto)` : ""
 			}`}>
 				<div class="schedule-head">
-					<div class="heading">Options</div>
-					<div class="vote-heading">Your vote</div>
+					<div class="heading">Optionen</div>
+					<div class="vote-heading">Ihre Stimme</div>
 					<button
 						class="toggle"
 						type="button"

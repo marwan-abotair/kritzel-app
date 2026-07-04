@@ -12,7 +12,7 @@ type Props = {
     const survey = await Surveys.get(props.surveyId);
     if (typeof survey === "undefined") {
         /* TODO: redirect to a proper 404 page */
-        return <div>This survey could not be found.</div>;
+        return <div>Diese Umfrage konnte nicht gefunden werden.</div>;
     }
 
     const surveyDefinition = (await import(`common/surveys/${survey.type}/survey.ts`)).default as Survey<unknown>;
@@ -31,47 +31,47 @@ type Props = {
                 editableConfiguration: await survey.getEditableConfiguration(administrationToken)
                     .catch((error) => {
                         if (error.message.includes("Unauthorized")) {
-                            alert("You are not authorized to edit this survey.");
+                            alert("Sie sind nicht berechtigt, diese Umfrage zu bearbeiten. Sie werden zur Startseite weitergeleitet.");
                             window.location.href = "/";
                         } else throw error;
                     }),
             })}
         </div>
         <div class="share panel">
-            <div class="title">Share your survey</div>
+            <div class="title">Teilen Sie Ihre Umfrage</div>
             <AutoSaveLabel />
 
             <div class="link-rows">
                 <div class="link-row">
-                    <div class="link-label">Participant Link</div>
+                    <div class="link-label">Teilnehmerlink</div>
                     <div class="link-field">
                         <span>{`${window.location.host}/${props.surveyId}`}</span>
                         <button type="button" onclick={() => {
                             navigator.clipboard.writeText(`${window.location.origin}/${props.surveyId}`);
                             copiedMetadata.participantLink = true;
-                        }}>{!copiedMetadata.participantLink ? "Copy Link" : "Copied"}</button>
+                        }}>{!copiedMetadata.participantLink ? "Link kopieren" : "Kopiert"}</button>
                     </div>
                 </div>
 
                 <div class="link-row">
-                    <div class="link-label">Edit and Moderate this Survey</div>
+                    <div class="link-label">Diese Umfrage bearbeiten und moderieren</div>
                     <div class="link-field">
                         <span>{`${window.location.host}/edit/${props.surveyId}?token=${administrationToken}`}</span>
                         <button type="button" onclick={() => {
                             navigator.clipboard.writeText(`${window.location.origin}/edit/${props.surveyId}?token=${administrationToken}`);
                             copiedMetadata.editLink = true;
-                        }}>{!copiedMetadata.editLink ? "Copy Link" : "Copied"}</button>
+                        }}>{!copiedMetadata.editLink ? "Link kopieren" : "Kopiert"}</button>
                     </div>
                 </div>
 
                 <div class="link-row">
-                    <div class="link-label">Survey ID</div>
+                    <div class="link-label">Umfrage-ID</div>
                     <div class="link-field">
                         <span>{props.surveyId}</span>
                         <button type="button" onclick={() => {
                             navigator.clipboard.writeText(props.surveyId);
                             copiedMetadata.surveyId = true;
-                        }}>{!copiedMetadata.surveyId ? "Copy ID" : "Copied"}</button>
+                        }}>{!copiedMetadata.surveyId ? "ID kopieren" : "Kopiert"}</button>
                     </div>
                 </div>
             </div>

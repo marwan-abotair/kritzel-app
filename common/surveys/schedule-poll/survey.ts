@@ -22,14 +22,14 @@ export function formatDuration(milliseconds: number) {
 }
 
 export default {
-    label: "Schedule Poll",
+    label: "Terminumfrage",
 
     defaultData: {
         title: "",
         description: "",
         voteOptions: [
-            { icon: "✅️", label: "Yes" },
-            { icon: "❌️", label: "No" },
+            { icon: "✅️", label: "Ja" },
+            { icon: "❌️", label: "Nein" },
         ],
         dates: [],
     },
