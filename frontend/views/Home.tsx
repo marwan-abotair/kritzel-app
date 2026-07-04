@@ -26,6 +26,11 @@ import { Component, template } from "uix/components/Component.ts";
         <a href="/create-survey" class="create-survey">
             <button type="button">Create Schedule</button>
         </a>
+
+        <footer style="margin-top: 40px; font-size: 0.9em; text-align: center; gap: 15px; display: flex; justify-content: center;">
+            <a href="/impressum">Impressum</a>
+            <a href="/datenschutz">Datenschutz</a>
+        </footer>
     </main>;
 })
 export class Home extends Component {
