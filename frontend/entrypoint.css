@@ -71,3 +71,73 @@ textarea {
 		opacity: 1;
 	}
 }
+
+.auth-page {
+	max-width: 400px;
+	margin: 40px auto;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+
+	.auth-title {
+		margin: 0 0 4px;
+	}
+
+	.auth-error {
+		color: var(--color-error);
+		font-size: 0.9em;
+		font-weight: 600;
+	}
+
+	.auth-field {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		font-weight: 600;
+		font-size: 0.95em;
+	}
+
+	.auth-input {
+		padding: 10px 14px;
+		border-radius: 10px;
+		border: 1px solid var(--color-border);
+		background-color: var(--color-input-bg);
+		color: var(--color-fg);
+		outline: none;
+		font-size: 1em;
+		transition: border-color 0.2s;
+
+		&:focus {
+			border-color: var(--color-fg);
+		}
+	}
+
+	.auth-submit {
+		padding: 10px;
+		margin-top: 8px;
+		font-size: 0.95em;
+	}
+
+	.auth-switch {
+		font-size: 0.85em;
+		color: #bdbdbd;
+		text-align: center;
+		margin: 0;
+
+		a {
+			color: var(--color-fg);
+			font-weight: 600;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
+	
+	.auth-success {
+		color: #4ade80;
+		font-size: 0.9em;
+		font-weight: 600;
+	}
+}
