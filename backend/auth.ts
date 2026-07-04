@@ -57,4 +57,29 @@ export class AuthEndpoint {
             return { success: false, error: "Login failed" }; 
         }
     }
+
+    @property
+    static async linkSurveyToUser(userId: string, surveyId: string): Promise<boolean> {
+        try {
+            const user = StoredUser.getById(userId);
+            if (!user) return false;
+
+            user.addSurvey(surveyId);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+    
+    @property
+    static async getUserSurveys(userId: string): Promise<string[]> {
+        try {
+            const user = StoredUser.getById(userId);
+            if (!user) return [];
+            
+            return user.surveyIds || [];
+        } catch {
+            return [];
+        }
+    }
 }

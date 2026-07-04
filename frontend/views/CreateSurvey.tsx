@@ -2,10 +2,13 @@ import { Component, template } from "uix/components/Component.ts";
 import { ALL_SURVEY_TYPES } from "common/surveys/all.ts";
 import { Survey } from "common/surveys/surveys.ts";
 import { Surveys } from "backend/data.ts";
+import { AppState } from "frontend/appstate.ts";
+import { AuthEndpoint } from "backend/auth.ts";
+
 
 @template(function () {
     return <main>
-        <h2>What would you like to create?</h2>
+        <h2>Was möchten Sie erstellen?</h2>
         <section>
             {ALL_SURVEY_TYPES.map(async (typeName) => {
                 const surveyDefinition = (await import(`common/surveys/${typeName}/survey.ts`)).default as Survey<unknown>;
@@ -15,6 +18,10 @@ import { Surveys } from "backend/data.ts";
                     type="button"
                     onclick={async () => {
                         const { id, administrationToken } = await Surveys.create(typeName);
+                        const currentUserId = AppState.currentUserId.val;
+                        if (currentUserId) {
+                            await AuthEndpoint.linkSurveyToUser(currentUserId, id);
+                        }
                         window.location.href = `/edit/${id}?token=${administrationToken}`;
                     }}
                 >

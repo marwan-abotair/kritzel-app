@@ -1,12 +1,13 @@
 import { Component, template } from "uix/components/Component.ts";
 import { AppState } from "frontend/appstate.ts";
+import { AuthEndpoint } from "backend/auth.ts";
 
 @template(function (this: Home) {
     return <main>
 		<div class="auth-status-bar">
-			{always(() => AppState.currentUser.val ? 
+			{always(() => AppState.currentUserId.val ? 
 				<div>
-					<span>Eingeloggt als <strong>{AppState.currentUser.val.username}</strong></span>
+					<span>Eingeloggt als <strong>{AppState.currentUsername.val}</strong></span>
 					<button type="button" onclick={() => AppState.clearSession()}>Ausloggen</button>
 				</div>
 				:
@@ -16,6 +17,25 @@ import { AppState } from "frontend/appstate.ts";
 			)}
 		</div>
         <h1>Kritzel</h1>
+        
+            {always(() => AppState.currentUserId.val !== null && this.mySurveys.length > 0
+            ? (
+                <section class="panel my-surveys-section">
+                    <h2>Meine Umfragen</h2>
+                    <ul>
+                        {this.mySurveys.map(id => (
+                            <li>
+                                <a href={`/${id}`}>
+                                📅 Umfrage: {id}
+                                </a>
+                                </li>
+                        ))}
+                    </ul>
+                </section>
+                )
+                : null
+            )}
+            
         <div class="join-by-id">
             <input
                 type="text"
@@ -41,7 +61,37 @@ import { AppState } from "frontend/appstate.ts";
         </a>
     </main>;
 })
+
 export class Home extends Component {
+
+	mySurveys = $<string[]>([]);
     surveyId = $("");
-    idSubmittable = always(() => this.surveyId.val.trim().length == 6);
+
+    idSubmittable = always(() => this.surveyId.val.trim().length === 6); 
+
+	protected override async onCreate() {
+
+		if (AppState.currentUserId.val) {
+			await this.loadSurveys();
+		}
+
+		observe(AppState.currentUserId, (userId) => {
+			if (userId) {
+				this.loadSurveys();
+			} else {
+				this.mySurveys.length = 0;
+			}
+		});
+	}
+
+	private async loadSurveys() {
+		const userId = AppState.currentUserId.val;
+		if (userId) {
+            const surveys = await AuthEndpoint.getUserSurveys(userId);
+			this.mySurveys.length = 0;
+            for (const id of surveys) {
+                this.mySurveys.push(id);
+            }
+		}
+	}
 }
