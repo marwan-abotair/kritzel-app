@@ -8,7 +8,7 @@ export class AppState {
     static setSession(user: { id: string; username: string }) {
         this.currentUserId.val = user.id;
         this.currentUsername.val = user.username;
-        
+
         if (typeof localStorage !== "undefined") {
             localStorage.setItem("kritzel_user_id", user.id);
             localStorage.setItem("kritzel_user_name", user.username);
@@ -16,8 +16,8 @@ export class AppState {
     }
 
     static clearSession() {
-        this.currentUserId.val = null;
-        this.currentUsername.val = null;
+        AppState.currentUserId.val = null;
+        AppState.currentUsername.val = null;
 
         if (typeof localStorage !== "undefined") {
             localStorage.removeItem("kritzel_user_id");

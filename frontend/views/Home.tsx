@@ -8,7 +8,7 @@ import { AuthEndpoint } from "backend/auth.ts";
 			{always(() => AppState.currentUserId.val ? 
 				<div>
 					<span>Eingeloggt als <strong>{AppState.currentUsername.val}</strong></span>
-					<button type="button" onclick={() => AppState.clearSession()}>Ausloggen</button>
+                    <button type="button" onclick={() => { AppState.clearSession(); window.location.href = '/'; }}>Ausloggen</button>
 				</div>
 				:
 				<div>
