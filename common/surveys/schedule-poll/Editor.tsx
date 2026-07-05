@@ -103,7 +103,7 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 			<Calendar class="calendar panel" values={selectedDates} />
 			<div class="slots panel">
 				{props.editableConfiguration.dates.map(date => <DateSlot scheduleDate={date} />)}
-				{!anyDateSelected.val && <div class="no-dates">Begin by selecting a date from the calendar.</div>}
+				{!anyDateSelected.val && <div class="no-dates">Beginnen Sie damit, ein Datum aus dem Kalender auszuwählen.</div>}
 			</div>
 		</div>
 	</main>;

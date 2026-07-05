@@ -12,8 +12,8 @@ type Props = {
 	const _ = new Database(); /* Otherwise, the <emoji-picker> will not load */
 
 	return <div class="voting-options panel">
-		<div class="title">Voting Options</div>
-		<div class="explanation">Customize how participants can vote by setting icons and descriptions</div>
+		<div class="title">Abstimmungsoptionen</div>
+		<div class="explanation">Passen Sie an, wie Teilnehmer abstimmen können, indem Sie Symbole und Beschreibungen festlegen</div>
 
 		<div class="options">
 			<uix-fragment>
@@ -32,13 +32,13 @@ type Props = {
 						</button>
 						{pickerOpen.val && <div class="emoji-picker-backdrop" onclick={() => pickerOpen.val = false}></div>}
 						{pickerOpen.val && picker}
-						<input type="text" value={option.label} placeholder="Label" />
+						<input type="text" value={option.label} placeholder="Bezeichnung" />
 						<button type="button" class="remove" onclick={() => props.options.splice(index, 1)}>✗</button>
 					</div>;
 				})}
 			</uix-fragment>
 
-			<button type="button" class="add-option" onclick={() => this.addOption()}>Add Option</button>
+			<button type="button" class="add-option" onclick={() => this.addOption()}>Option hinzufügen</button>
 		</div>
 	</div>;
 })

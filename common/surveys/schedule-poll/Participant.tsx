@@ -92,7 +92,7 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 									disabled={!this.participantName.val.trim()}
 									value={this.selectedOptions[key]}
 								>
-									{!this.selectedOptions[key] && <option value="">Vote</option>}
+									{!this.selectedOptions[key] && <option value="">Abstimmung</option>}
 									{props.survey.configuration.voteOptions.map(option =>
 										<option value={`${option.icon} ${option.label}`}>
 											{option.icon} {option.label}
