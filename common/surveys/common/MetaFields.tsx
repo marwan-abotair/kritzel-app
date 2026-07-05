@@ -8,12 +8,12 @@ type Props = {
 @template(function (props) {
 	return <div class="meta">
 		<label>
-			Title
-			<input type="text" class="title" value={props.title} placeholder="Name Your Survey" />
+			Titel
+			<input type="text" class="title" value={props.title} placeholder="Benennen Sie Ihre Umfrage" />
 		</label>
 		<label>
-			Description
-			<textarea class="description" value={props.description} placeholder="Describe Your Survey"></textarea>
+			Beschreibung
+			<textarea class="description" value={props.description} placeholder="Beschreiben Sie Ihre Umfrage"></textarea>
 		</label>
 	</div>;
 })
