@@ -40,7 +40,7 @@ import { AuthEndpoint } from "backend/auth.ts";
             <input
                 type="text"
                 placeholder="Termin ID"
-                value={this.surveyId.val}
+                value={this.surveyId}
                 maxlength={6}
             />
 
@@ -48,7 +48,7 @@ import { AuthEndpoint } from "backend/auth.ts";
                 class="secondary"
                 type="submit"
                 onclick={() => window.location.href = `/${this.surveyId.val.toLowerCase()}`}
-                disabled={!this.idSubmittable.val}
+                disabled={always(() => this.surveyId.val.length !== 6)}
             >
                 Termin öffnen
             </button>
@@ -66,8 +66,6 @@ export class Home extends Component {
 
 	mySurveys = $<string[]>([]);
     surveyId = $("");
-
-    idSubmittable = always(() => this.surveyId.val.trim().length === 6); 
 
 	protected override async onCreate() {
 
