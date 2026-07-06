@@ -99,6 +99,9 @@ import {
 			accept=".ics,text/calendar"
 			onchange={(event) => this.importIcsFile(event)}
 			/>
+			<p class="calendar-privacy-hint">
+    			Deine Kalenderdatei wird nur in deinem Browser ausgewertet. Kritzel nutzt daraus nur belegte Zeiten, um passende Antworten vorzuschlagen.
+			</p>
 		</label>
 
 		<section class="slots panel">
