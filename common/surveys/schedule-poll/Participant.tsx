@@ -13,6 +13,7 @@ import {
     toIcsDateTime,
     type CalendarBusyRange,
 } from "common/calendar/ics.ts";
+
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
 		const counts: Record<SlotKey, number> = {};
@@ -240,33 +241,32 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 		downloadIcsFile("termin.ics",icsText);
 		
 	}
-	private exportBestSlot(){
-		let bestDateSlot: ScheduleDate | undefined;
-		let bestTimeSlot: ScheduleTime | undefined;
-		let bestCount = -1;
-
-		for(const dateSlot of this.properties.survey.configuration.dates){
-			for(const timeSlot of dateSlot.times){
-				const key = slotKey(dateSlot, timeSlot);
-				const count = Object.values(this.properties.survey.votes)
-				.filter(vote =>
-					typeof vote.slots[key] !== "undefined" &&
-					(emojiSentiments as Record<string, number | undefined>)[vote.slots[key].icon] !== -1
-				).length;
-					
-				if (count > bestCount) {
-					bestCount = count;
-					bestDateSlot = dateSlot;
-					bestTimeSlot = timeSlot;
+	private getBestSlot(){
+		const slotKeys: SlotKey[] = [];
+		for (const dateSlot of this.properties.survey.configuration.dates) {
+			for (const timeSlot of dateSlot.times) {
+				slotKeys.push(slotKey(dateSlot, timeSlot));
+			}
+    	}
+		const bestSlotKey = computeResult(slotKeys, this.properties.survey.votes).bestSlot;
+		if(!bestSlotKey) return null
+		for (const dateSlot of this.properties.survey.configuration.dates) {
+			for (const timeSlot of dateSlot.times) {
+				if (slotKey(dateSlot, timeSlot) === bestSlotKey) {
+					return { dateSlot, timeSlot };
 				}
 			}
-		}
-		if (!bestDateSlot || !bestTimeSlot || bestCount <= 0) {
-			alert("Es gibt noch keinen passenden Termin zum Exportieren.");
+    	}
+		return null;
+	}
+	private exportBestSlot(){
+		const bestSlot = this.getBestSlot();
+		if(!bestSlot) {
+			alert("Es gibt noch keinen besten Termin.");
 			return;
 		}
 
-		this.exportSlot(bestDateSlot, bestTimeSlot);
+		this.exportSlot(bestSlot.dateSlot,bestSlot.timeSlot);
 	}
 
 	private async importIcsFile(event: Event) {
