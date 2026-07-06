@@ -117,3 +117,40 @@ export type EditorProps<OPTIONS, VOTE_TYPE=Record<string, unknown>> = {
     editableConfiguration: OPTIONS;
 };
 export type ParticipantProps<OPTIONS, VOTE_TYPE> = { survey: StoredSurvey<OPTIONS, VOTE_TYPE> };
+
+export function cleanupExpiredSurveys() {
+    const THIRTY_DAYS_IN_MS = 30 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    console.log("Starte automatische Bereinigung alter Umfragen...");
+
+    // Wir iterieren über die echte Datenbank-Map 'privateSurveys'
+    for (const [id, privateSurvey] of privateSurveys.entries()) {
+        let baseDateMs = 0;
+        
+        // Da configuration generisch ist, sagen wir TypeScript kurz, 
+        // dass es dort nach unseren Termin-Daten suchen darf
+        const config = privateSurvey.configuration as any;
+
+        // Fall 1: Die Umfrage hat eine explizite Deadline
+        if (config.deadline) {
+            baseDateMs = new Date(config.deadline).getTime();
+        } 
+        // Fall 2: Keine Deadline, wir nehmen den spätesten Termin aus der Liste
+        else if (config.dates && config.dates.length > 0) {
+            baseDateMs = Math.max(...config.dates.map((date: string | number | Date) => new Date(date).getTime()));
+        } 
+        // Fall 3: Weder Deadline noch Termine vorhanden
+        else {
+            continue; 
+        }
+
+        const timeSinceBaseDate = now - baseDateMs;
+
+        // Wenn die Zeitspanne größer als 30 Tage ist -> Aus der Map löschen!
+        if (timeSinceBaseDate > THIRTY_DAYS_IN_MS) {
+            console.log(`Lösche Umfrage ${id} (Abgelaufen seit über 30 Tagen)`);
+            privateSurveys.delete(id); 
+        }
+    }
+}
