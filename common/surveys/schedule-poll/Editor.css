@@ -19,6 +19,7 @@ main {
 
 	.slots {
 		flex-grow: 1;
+		min-height: 200px;
 
 		display: flex;
 		flex-direction: column;

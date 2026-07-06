@@ -10,9 +10,31 @@ main {
 
 	> .meta,
 	> .name,
-	> .slots {
+	> .slots,
+	> .result {
 		width: 100%;
 		max-width: 980px;
+	}
+
+	> .result {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		border-color: #4ade80;
+
+		.result-label {
+			font-size: .8em;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: .04em;
+			color: #4ade80;
+		}
+
+		.result-slot {
+			font-size: 18px;
+			font-weight: 600;
+			color: var(--color-fg);
+		}
 	}
 
 	.name,

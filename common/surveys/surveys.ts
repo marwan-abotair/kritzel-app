@@ -88,6 +88,10 @@ export const StoredSurvey = struct("StoredSurvey", class {
     }
 
     @property async vote(value: unknown) {
+        const config = this.privateData.configuration as any
+        if(config.deadline && new Date() > new Date(config.deadline)){
+            throw new Error("Abstimmungszeitraum ist abgelaufen.");
+        }
         this.privateData.votes[datex.meta.caller.name] = value;
     }
 
