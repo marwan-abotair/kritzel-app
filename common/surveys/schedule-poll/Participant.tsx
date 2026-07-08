@@ -68,11 +68,11 @@ import {
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
 			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
 			{props.survey.configuration.deadline && (
-			<p class="deadline">
-				Abstimmung läuft bis:{" "}
-				{new Date(props.survey.configuration.deadline).toLocaleString("de-DE")}
-			</p>
-)}
+				<p class={`deadline ${isExpired.val ? "expired" : "active"}`}>
+					{isExpired.val ? "Abstimmung beendet: " : "Abstimmung läuft bis: "}
+					{new Date(props.survey.configuration.deadline).toLocaleString("de-DE")}
+				</p>
+			)}
 			<AutoSaveLabel />
 			<button
     		type="button"
@@ -93,9 +93,11 @@ import {
 			<input type="text" value={this.participantName} />
 		</label>
 
-		<label class ="panel">
-			Kalender importieren
-			<input type="file"
+		<label class ="import-panel panel">
+			<strong>Kalender importieren:</strong>
+			<input 
+			type="file"
+			class = "calendar-file-input"
 			accept=".ics,text/calendar"
 			onchange={(event) => this.importIcsFile(event)}
 			/>
