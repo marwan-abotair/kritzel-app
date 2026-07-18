@@ -1,37 +1,37 @@
 .language-switcher {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    z-index: 10;
-}
+	display: flex;
+	flex-direction: row;
+	gap: 4px;
+	position: absolute;
+	top: 16px;
+	right: 16px;
+	z-index: 10;
 
-.language-switcher button {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: .8em;
-    font-weight: 600;
-    letter-spacing: .5px;
+	button {
+		padding: 4px 10px;
+		border-radius: 6px;
+		font-size: .8em;
+		font-weight: 600;
+		letter-spacing: .5px;
 
-    color: var(--color-fg);
-    background-color: transparent;
-    border: 1px solid var(--color-border);
-    cursor: pointer;
-    opacity: 0.5;
-    transition: opacity .2s, background-color .2s;
-}
+		color: var(--color-fg);
+		background-color: transparent;
+		border: 1px solid var(--color-border);
+		cursor: pointer;
+		opacity: 0.5;
+		transition: opacity .2s, background-color .2s;
 
-.language-switcher button:hover,
-.language-switcher button:focus-visible {
-    opacity: 1;
-    outline: 2px solid var(--color-fg);
-    outline-offset: 2px;
-}
+		&:hover,
+		&:focus-visible {
+			opacity: 1;
+			outline: 2px solid var(--color-fg);
+			outline-offset: 2px;
+		}
 
-.language-switcher button.active {
-    opacity: 1;
-    background-color: var(--color-input-bg);
-    border-color: var(--color-fg);
+		&.active {
+			opacity: 1;
+			background-color: var(--color-input-bg);
+			border-color: var(--color-fg);
+		}
+	}
 }

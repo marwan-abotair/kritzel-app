@@ -1,7 +1,9 @@
 import { Component, template } from "uix/components/Component.ts";
-import { currentLocale, t } from "common/i18n/i18n.ts";
+import { localtext } from "datex-core-legacy/datex_short.ts";
+
+const label = localtext({ en: "✓ Saves Automatically", de: "✓ Wird automatisch gespeichert" });
 
 @template(function () {
-    return <div aria-live="polite">{always(() => t("auto_save"))}</div>;
+	return <div>{label}</div>;
 })
 export class AutoSaveLabel extends Component {}

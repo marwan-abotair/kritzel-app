@@ -3,7 +3,7 @@ import { Component, template } from "uix/components/Component.ts";
 
 import { MetaFields } from "common/surveys/common/MetaFields.tsx";
 import { type EditorProps } from "common/surveys/surveys.ts";
-import { t } from "common/i18n/i18n.ts";
+import { localtext } from "datex-core-legacy/datex_short.ts";
 
 import { type Options } from "./survey.ts";
 import { ScheduleDate, ScheduleTime } from "./types.ts";
@@ -97,6 +97,8 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 		}
 	});
 
+	const noDatesText = localtext({ en: "Begin by selecting a date from the calendar.", de: "Beginne damit, ein Datum im Kalender auszuwählen." });
+
 	return <main>
 		<MetaFields title={props.editableConfiguration.title} description={props.editableConfiguration.description} />
 		<VotingOptionsEditor options={props.editableConfiguration.voteOptions} />
@@ -104,7 +106,7 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 			<Calendar class="calendar panel" values={selectedDates} />
 			<div class="slots panel">
 				{props.editableConfiguration.dates.map(date => <DateSlot scheduleDate={date} />)}
-				{!anyDateSelected.val && <div class="no-dates" aria-live="polite">{always(() => t("schedule_no_dates"))}</div>}
+				{!anyDateSelected.val && <div class="no-dates">{noDatesText}</div>}
 			</div>
 		</div>
 	</main>;
