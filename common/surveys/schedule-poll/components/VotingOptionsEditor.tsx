@@ -9,21 +9,19 @@ type Props = {
 	options: VoteOption[]
 }
 
-const strings = {
-	title: localtext({ en: "Voting Options", de: "Abstimmungsoptionen" }),
-	explanation: localtext({ en: "Customize how participants can vote by setting icons and descriptions", de: "Passe an, wie Teilnehmer abstimmen können – mit Icons und Beschreibungen" }),
-	labelPlaceholder: localtext({ en: "Label", de: "Bezeichnung" }),
-	openEmoji: localtext({ en: "Select emoji", de: "Emoji auswählen" }),
-	removeOption: localtext({ en: "Remove option", de: "Option entfernen" }),
-	addOption: localtext({ en: "Add Option", de: "Option hinzufügen" }),
-};
+const title = localtext({ en: "Voting Options", de: "Abstimmungsoptionen" });
+const explanation = localtext({ en: "Customize how participants can vote by setting icons and descriptions", de: "Passe an, wie Teilnehmer abstimmen können – mit Icons und Beschreibungen" });
+const labelPlaceholder = localtext({ en: "Label", de: "Bezeichnung" });
+const openEmoji = localtext({ en: "Select emoji", de: "Emoji auswählen" });
+const removeOption = localtext({ en: "Remove option", de: "Option entfernen" });
+const addOption = localtext({ en: "Add Option", de: "Option hinzufügen" });
 
 @template(function (props) {
 	const _ = new Database(); /* Otherwise, the <emoji-picker> will not load */
 
 	return <div class="voting-options panel">
-		<div class="title">{strings.title}</div>
-		<div class="explanation">{strings.explanation}</div>
+		<div class="title">{title}</div>
+		<div class="explanation">{explanation}</div>
 
 		<div class="options">
 			<uix-fragment>
@@ -37,18 +35,18 @@ const strings = {
 					});
 
 					return <div class="option">
-						<button type="button" onclick={() => pickerOpen.val = !pickerOpen.val} aria-label={strings.openEmoji} aria-expanded={pickerOpen.val} aria-haspopup="dialog">
+						<button type="button" onclick={() => pickerOpen.val = !pickerOpen.val} aria-label={openEmoji} aria-expanded={pickerOpen.val}>
 							{option.icon}
 						</button>
-						{pickerOpen.val && <div class="emoji-picker-backdrop" onclick={() => pickerOpen.val = false} aria-hidden="true"></div>}
+						{pickerOpen.val && <div class="emoji-picker-backdrop" onclick={() => pickerOpen.val = false}></div>}
 						{pickerOpen.val && picker}
-						<input type="text" value={option.label} placeholder={strings.labelPlaceholder} aria-label={strings.labelPlaceholder} />
-						<button type="button" class="remove" onclick={() => props.options.splice(index, 1)} aria-label={strings.removeOption}>✗</button>
+						<input type="text" value={option.label} placeholder={labelPlaceholder} />
+						<button type="button" class="remove" onclick={() => props.options.splice(index, 1)} aria-label={removeOption}>✗</button>
 					</div>;
 				})}
 			</uix-fragment>
 
-			<button type="button" class="add-option" onclick={() => this.addOption()}>{strings.addOption}</button>
+			<button type="button" class="add-option" onclick={() => this.addOption()}>{addOption}</button>
 		</div>
 	</div>;
 })

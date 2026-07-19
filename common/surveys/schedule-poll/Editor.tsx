@@ -12,6 +12,8 @@ import { Calendar } from "./components/Calendar.tsx";
 import { DateSlot } from "./components/DateSlot.tsx";
 import { VotingOptionsEditor } from "./components/VotingOptionsEditor.tsx";
 
+const noDates = localtext({ en: "Begin by selecting a date from the calendar.", de: "Beginne damit, ein Datum im Kalender auszuwählen." });
+
 /**
  * Predicts the time schedule most likely to apply to a newly created date slot
  * based on the schedules of existing date slots.
@@ -97,8 +99,6 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 		}
 	});
 
-	const noDatesText = localtext({ en: "Begin by selecting a date from the calendar.", de: "Beginne damit, ein Datum im Kalender auszuwählen." });
-
 	return <main>
 		<MetaFields title={props.editableConfiguration.title} description={props.editableConfiguration.description} />
 		<VotingOptionsEditor options={props.editableConfiguration.voteOptions} />
@@ -106,7 +106,7 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 			<Calendar class="calendar panel" values={selectedDates} />
 			<div class="slots panel">
 				{props.editableConfiguration.dates.map(date => <DateSlot scheduleDate={date} />)}
-				{!anyDateSelected.val && <div class="no-dates">{noDatesText}</div>}
+				{!anyDateSelected.val && <div class="no-dates">{noDates}</div>}
 			</div>
 		</div>
 	</main>;

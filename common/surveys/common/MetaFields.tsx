@@ -6,22 +6,20 @@ type Props = {
 	description: Ref<string>;
 }
 
-const strings = {
-	titleLabel: localtext({ en: "Title", de: "Titel" }),
-	titlePlaceholder: localtext({ en: "Name Your Survey", de: "Umfrage benennen" }),
-	descriptionLabel: localtext({ en: "Description", de: "Beschreibung" }),
-	descriptionPlaceholder: localtext({ en: "Describe Your Survey", de: "Umfrage beschreiben" }),
-};
+const titleLabel = localtext({ en: "Title", de: "Titel" });
+const titlePlaceholder = localtext({ en: "Name Your Survey", de: "Umfrage benennen" });
+const descriptionLabel = localtext({ en: "Description", de: "Beschreibung" });
+const descriptionPlaceholder = localtext({ en: "Describe Your Survey", de: "Umfrage beschreiben" });
 
 @template(function (props) {
 	return <div class="meta">
 		<label>
-			{strings.titleLabel}
-			<input type="text" class="title" value={props.title} placeholder={strings.titlePlaceholder} />
+			{titleLabel}
+			<input type="text" class="title" value={props.title} placeholder={titlePlaceholder} />
 		</label>
 		<label>
-			{strings.descriptionLabel}
-			<textarea class="description" value={props.description} placeholder={strings.descriptionPlaceholder}></textarea>
+			{descriptionLabel}
+			<textarea class="description" value={props.description} placeholder={descriptionPlaceholder}></textarea>
 		</label>
 	</div>;
 })
