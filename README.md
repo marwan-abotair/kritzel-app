@@ -10,6 +10,19 @@ It marks an optional part of a larger open-source education and management ecosy
 
 Contributions and Issue Reports to this Git repository are welcome at any time.
 
+## Key Features
+
+* **No Account Required:** Create and participate in polls instantly without registration.
+* **Real-time Syncing:** Live updates across all participants powered by DATEX.
+* **Privacy by Design:** Automatic cleanup of expired data and fully open-source.
+* **Modular Survey Types:** Flexible schedule polls, yes/no voting, and extensible survey modules.
+
+## Data Privacy & GDPR Compliance
+
+As a privacy-focused application, Kritzel incorporates built-in features to support data minimization and GDPR compliance:
+* **Automatic Data Cleanup:** Expired surveys and their associated data are automatically deleted from the system after 30 days.
+* **Legal Pages:** Integrated, ready-to-use templates for privacy policies (Datenschutzerklärung) and legal notices (Impressum).
+
 ## Installation
 
 Install the UIX runtime:
@@ -106,3 +119,7 @@ export const ALL_SURVEY_TYPES = [
 ## Technology
 
 Built on [UIX](https://github.com/unyt-org/uix), a full-stack framework with real-time data synchronization via [DATEX](https://datex.unyt.org), developed and maintained by the non-profit [unyt.org democratic free network technologies e.V.](https://unyt.org) association. Runs on Deno.
+
+## Credits
+
+Developed by Team "Kritzel" as part of the "Neue Webtechnologien" module at TU Berlin.
