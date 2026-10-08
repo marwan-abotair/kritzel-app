@@ -17,6 +17,8 @@ const showVoters = localtext({ en: "Show voters", de: "Teilnehmer einblenden" })
 const hideVoters = localtext({ en: "Hide voters", de: "Teilnehmer ausblenden" });
 const votePlaceholder = localtext({ en: "Vote", de: "Abstimmen" });
 
+const MAX_COMMENT_LENGTH = 160;
+
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
 		const counts: Record<SlotKey, number> = {};
@@ -86,9 +88,22 @@ const votePlaceholder = localtext({ en: "Vote", de: "Abstimmen" });
 
 						{dateSlot.times.map(timeSlot => {
 							const key = slotKey(dateSlot, timeSlot);
+							const visibleComments = Object.values(props.survey.votes)
+							    .flatMap(vote => {
+									const comment = vote.comments?.[key]?.trim();
+									if (!comment) return [];
+								
+							        return [{
+										name: vote.name,
+										comment,
+									}];
+							});
 
 							if (!(key in this.selectedOptions))
 								this.selectedOptions[key] = "";
+
+							if (!(key in this.slotComments))
+								this.slotComments[key] = "";
 
 							return <div class="slot">
 								<div class="time">
@@ -100,18 +115,32 @@ const votePlaceholder = localtext({ en: "Vote", de: "Abstimmen" });
 									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
 								</div>
 
-								<select
-									class="vote"
-									disabled={!this.participantName.val.trim()}
-									value={this.selectedOptions[key]}
-								>
-									{!this.selectedOptions[key] && <option value="">{votePlaceholder}</option>}
-									{props.survey.configuration.voteOptions.map(option =>
-										<option value={`${option.icon} ${option.label}`}>
-											{option.icon} {option.label}
-										</option>
-									)}
-								</select>
+								<div class="choice">
+									<select
+									    class="vote"
+										disabled={!this.participantName.val.trim()}
+										value={this.selectedOptions[key]}
+									>
+										{!this.selectedOptions[key] && <option value="">Abstimmen</option>}
+										{props.survey.configuration.voteOptions.map(option =>
+										    <option value={`${option.icon} ${option.label}`}>
+												{option.icon} {option.label}
+											</option>
+										)}
+									</select>
+									
+									<input
+									    class="comment"
+										type="text"
+										placeholder="Optionaler Kommentar"
+										aria-label="Optionaler Kommentar für diesen Zeitraum"
+										title="Optionaler Kommentar für diesen Zeitraum"
+										disabled={!this.participantName.val.trim()}
+										value={this.slotComments[key]}
+										maxlength={MAX_COMMENT_LENGTH}
+										onblur={() => this.submitVotes()}
+									/>
+								</div>
 
 								<div class={`total ${slotVoteCounts[key] > 0 && slotVoteCounts[key] === highestVoteCount.val ? "max" : ""}`}>
 									{slotVoteCounts[key]}
@@ -124,6 +153,16 @@ const votePlaceholder = localtext({ en: "Vote", de: "Abstimmen" });
 											{selectedOption?.icon ?? "–"}
 										</div>;
 									})}
+								</div>}
+
+								{visibleComments.length > 0 && <div class="comments">
+									<div class="comments-title">Kommentare</div>
+									{visibleComments.map(({ name, comment }) =>
+									    <div class="comment-entry">
+											<span class="comment-author">{name}:</span>
+											<span class="comment-text">{comment}</span>
+										</div>
+									)}
 								</div>}
 							</div>;
 						})}
@@ -141,13 +180,15 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 	 * formatted as `"{icon} {label}"`
 	 */
 	selectedOptions = $<Record<string, string>>({});
+	slotComments = $<Record<string, string>>({});
 
 	protected override onCreate() {
 		if (this.properties.survey.votes[datex.meta.caller.name]?.name !== undefined) {
 			this.participantName.val = this.properties.survey.votes[datex.meta.caller.name].name;
 		}
 		this.updateSelectFriendlyOptionsObject();
-		observe(this.properties.survey.votes, () =>  { this.updateSelectFriendlyOptionsObject() });
+		this.updateSlotComments();
+		observe(this.properties.survey.votes, () =>  { this.updateSelectFriendlyOptionsObject(); this.updateSlotComments(); });
 		observe(this.selectedOptions, () => { this.submitVotes() });
 		observe(this.participantName, () => { this.submitVotes() });
 	}
@@ -160,6 +201,22 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 		}
 	}
 
+	private updateSlotComments() {
+		const submittedComments = this.properties.survey.votes[datex.meta.caller.name]?.comments ?? {};
+		
+		for (const key of Object.keys(this.slotComments)) {
+			if (!(key in submittedComments)) {
+				this.slotComments[key] = "";
+			}
+		}
+		
+		for (const [key, comment] of Object.entries(submittedComments)) {
+			if (this.slotComments[key] === comment) continue;
+			this.slotComments[key] = comment;
+		}
+	}
+
+	
 	private async submitVotes() {
 		if (this.participantName.val.trim() === "") return;
 
@@ -172,6 +229,11 @@ export default class SchedulePollParticipant extends Component<ParticipantProps<
 						const [icon, label] = value.split(" ", 2);
 						return [key, { icon, label }]
 					})
+			),
+			comments: Object.fromEntries(
+				Object.entries<string>(this.slotComments)
+				    .map(([key, value]) => [key, value.trim().slice(0, MAX_COMMENT_LENGTH)])
+					.filter(([_, value]) => value !== "")
 			)
 		});
 	}
