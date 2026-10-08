@@ -3,6 +3,8 @@ import { Component, template } from "uix/components/Component.ts";
 import { ScheduleDate, ScheduleTime } from "common/surveys/schedule-poll/types.ts";
 import { TimeSlot } from "common/surveys/schedule-poll/components/TimeSlot.tsx";
 import { Time } from "datex-core-legacy/types/time.ts";
+import { localtext } from "datex-core-legacy/datex_short.ts";
+import { UIX } from "uix";
 
 type Props = {
     scheduleDate: ScheduleDate;
@@ -59,12 +61,14 @@ function predictNextTimeRange(times: ScheduleTime[], lastNTimes = 3) {
     } satisfies Pick<ScheduleTime, "start" | "end">;
 }
 
+const addTimeSlot = localtext({ en: "Add Time Slot", de: "Zeitslot hinzufügen" });
+
 @template(function (props) {
     return <div class="date-slot">
-        <div class="date">{props.scheduleDate.date.toLocaleDateString()}</div>
+        <div class="date">{always(() => props.scheduleDate.date.toLocaleDateString(UIX.language))}</div>
         <div class="times">
             {props.scheduleDate.times.map((time, i) => <TimeSlot start={time.start} end={time.end} onRemove={() => props.scheduleDate.times.splice(i, 1)} />)}
-            <button type="button" class="primary" onclick={() => this.addTimeSlot()}>Add Time Slot</button>
+            <button type="button" class="primary" onclick={() => this.addTimeSlot()}>{addTimeSlot}</button>
         </div>
     </div>;
 })

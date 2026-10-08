@@ -3,6 +3,7 @@ import { Component, template } from "uix/components/Component.ts";
 
 import { MetaFields } from "common/surveys/common/MetaFields.tsx";
 import { type EditorProps } from "common/surveys/surveys.ts";
+import { localtext } from "datex-core-legacy/datex_short.ts";
 
 import { type Options } from "./survey.ts";
 import { ScheduleDate, ScheduleTime } from "./types.ts";
@@ -10,6 +11,8 @@ import { ScheduleDate, ScheduleTime } from "./types.ts";
 import { Calendar } from "./components/Calendar.tsx";
 import { DateSlot } from "./components/DateSlot.tsx";
 import { VotingOptionsEditor } from "./components/VotingOptionsEditor.tsx";
+
+const noDates = localtext({ en: "Begin by selecting a date from the calendar.", de: "Beginne damit, ein Datum im Kalender auszuwählen." });
 
 /**
  * Predicts the time schedule most likely to apply to a newly created date slot
@@ -103,7 +106,7 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 			<Calendar class="calendar panel" values={selectedDates} />
 			<div class="slots panel">
 				{props.editableConfiguration.dates.map(date => <DateSlot scheduleDate={date} />)}
-				{!anyDateSelected.val && <div class="no-dates">Begin by selecting a date from the calendar.</div>}
+				{!anyDateSelected.val && <div class="no-dates">{noDates}</div>}
 			</div>
 		</div>
 	</main>;

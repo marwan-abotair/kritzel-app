@@ -2,10 +2,15 @@ import { Component, template } from "uix/components/Component.ts";
 import { ALL_SURVEY_TYPES } from "common/surveys/all.ts";
 import { Survey } from "common/surveys/surveys.ts";
 import { Surveys } from "backend/data.ts";
+import { LanguageSwitcher } from "common/components/LanguageSwitcher.tsx";
+import { localtext } from "datex-core-legacy/datex_short.ts";
+
+const heading = localtext({ en: "What would you like to create?", de: "Was möchtest du erstellen?" });
 
 @template(function () {
     return <main>
-        <h2>What would you like to create?</h2>
+        <LanguageSwitcher />
+        <h2>{heading}</h2>
         <section>
             {ALL_SURVEY_TYPES.map(async (typeName) => {
                 const surveyDefinition = (await import(`common/surveys/${typeName}/survey.ts`)).default as Survey<unknown>;

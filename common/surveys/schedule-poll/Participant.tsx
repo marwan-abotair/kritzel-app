@@ -5,6 +5,17 @@ import { AutoSaveLabel } from "common/components/AutoSaveLabel.tsx";
 import { emojiSentiments } from "./static/emoji-sentiments.ts";
 import { formatDuration, Options } from "./survey.ts";
 import { SlotKey, slotKey, Vote } from "./types.ts";
+import { localtext } from "datex-core-legacy/datex_short.ts";
+import { UIX } from "uix";
+
+const defaultDescription = localtext({ en: "Please vote for the slots that fit your preferences.", de: "Bitte stimme für die Zeitslots ab, die dir passen." });
+const yourName = localtext({ en: "Your name", de: "Dein Name" });
+const nameHint = localtext({ en: "Required for voting", de: "Pflichtfeld zum Abstimmen" });
+const optionsHeading = localtext({ en: "Options", de: "Optionen" });
+const voteHeading = localtext({ en: "Your vote", de: "Deine Stimme" });
+const showVoters = localtext({ en: "Show voters", de: "Teilnehmer einblenden" });
+const hideVoters = localtext({ en: "Hide voters", de: "Teilnehmer ausblenden" });
+const votePlaceholder = localtext({ en: "Vote", de: "Abstimmen" });
 
 @template(function (props) {
 	const slotVoteCounts = always<Record<string, number>>(() => {
@@ -26,13 +37,13 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 	return <main>
 		<section class="meta panel">
 			<h1>{props.survey.configuration.title || "Kritzel"}</h1>
-			<p>{props.survey.configuration.description || "Please vote for the slots that fit your preferences."}</p>
+			<p>{props.survey.configuration.description || defaultDescription}</p>
 			<AutoSaveLabel />
 		</section>
 
 		<label class="name panel">
-			Your name
-			<span class="hint">Required for voting</span>
+			{yourName}
+			<span class="hint">{nameHint}</span>
 			<input type="text" value={this.participantName} />
 		</label>
 
@@ -41,14 +52,16 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 				this.votersVisible.val ? ` repeat(${Object.keys(props.survey.votes).length}, auto)` : ""
 			}`}>
 				<div class="schedule-head">
-					<div class="heading">Options</div>
-					<div class="vote-heading">Your vote</div>
+					<div class="heading">{optionsHeading}</div>
+					<div class="vote-heading">{voteHeading}</div>
 					<button
 						class="toggle"
 						type="button"
+						aria-pressed={this.votersVisible.val}
+						aria-label={always(() => this.votersVisible.val ? hideVoters.val : showVoters.val)}
 						onclick={() => this.votersVisible.val = !this.votersVisible.val}
 					>
-						{this.votersVisible.val ? "👤 v" : "👤 >"}
+						{this.votersVisible.val ? "👤 ▲" : "👤 ▼"}
 					</button>
 					{this.votersVisible.val && <div class="names">
 						{Object.values(props.survey.votes).map(vote =>
@@ -61,13 +74,13 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 					<div class="date">
 						<div class="badge" style={`grid-row: span ${dateSlot.times.length}`}>
 							<span class="weekday">
-								{dateSlot.date.toLocaleDateString("de-DE", { weekday: "short" })}
+								{always(() => dateSlot.date.toLocaleDateString(UIX.language, { weekday: "short" }))}
 							</span>
 							<span class="day">
-								{dateSlot.date.toLocaleDateString("de-DE", { day: "2-digit" })}
+								{always(() => dateSlot.date.toLocaleDateString(UIX.language, { day: "2-digit" }))}
 							</span>
 							<span class="month">
-								{dateSlot.date.toLocaleDateString("de-DE", { month: "short" }).toUpperCase()}
+								{always(() => dateSlot.date.toLocaleDateString(UIX.language, { month: "short" }).toUpperCase())}
 							</span>
 						</div>
 
@@ -80,9 +93,9 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 							return <div class="slot">
 								<div class="time">
 									<span class="range">
-										{timeSlot.start.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+										{always(() => timeSlot.start.toLocaleTimeString(UIX.language, { hour: "2-digit", minute: "2-digit" }))}
 										{" – "}
-										{timeSlot.end.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" })}
+										{always(() => timeSlot.end.toLocaleTimeString(UIX.language, { hour: "2-digit", minute: "2-digit" }))}
 									</span>
 									<span class="duration">{formatDuration(timeSlot.end.getTime() - timeSlot.start.getTime())}</span>
 								</div>
@@ -92,7 +105,7 @@ import { SlotKey, slotKey, Vote } from "./types.ts";
 									disabled={!this.participantName.val.trim()}
 									value={this.selectedOptions[key]}
 								>
-									{!this.selectedOptions[key] && <option value="">Vote</option>}
+									{!this.selectedOptions[key] && <option value="">{votePlaceholder}</option>}
 									{props.survey.configuration.voteOptions.map(option =>
 										<option value={`${option.icon} ${option.label}`}>
 											{option.icon} {option.label}
