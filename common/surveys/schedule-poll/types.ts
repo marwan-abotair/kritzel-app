@@ -16,6 +16,7 @@ export type Schedule = {
     description: string;
     voteOptions: VoteOption[];
     dates: ScheduleDate[];
+    deadline?: Time;
 };
 
 export type ScheduleDate = {

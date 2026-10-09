@@ -46,6 +46,16 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 	return targetDate.times.map(({ start, end }) => ({ start, end })) satisfies Pick<ScheduleTime, "start" | "end">[];
 }
 
+function toDateTimeLocalValue(deadline?: Time) {
+	if (!deadline) return "";
+
+	const date = new Date(deadline);
+	const offset = date.getTimezoneOffset();
+	const localDate = new Date(date.getTime() - offset * 60_000);
+
+	return localDate.toISOString().slice(0, 16);
+}
+
 @template(function (props) {
 	const selectedDates = $(props.editableConfiguration.dates.map(slot => slot.date));
 	const anyDateSelected = $(selectedDates.length > 0);
@@ -101,6 +111,19 @@ function predictNextTimeRanges(dates: ScheduleDate[]) {
 
 	return <main>
 		<MetaFields title={props.editableConfiguration.title} description={props.editableConfiguration.description} />
+		<label>
+			Deadline
+			<input
+				type="datetime-local"
+				value={toDateTimeLocalValue(props.editableConfiguration.deadline)}
+				onchange={(event) => {
+					const value = (event.target as HTMLInputElement).value;
+					props.editableConfiguration.deadline = value
+						? new Time(new Date(value))
+						: undefined;
+				}}
+			/>
+		</label>
 		<VotingOptionsEditor options={props.editableConfiguration.voteOptions} />
 		<div class="schedule-setup">
 			<Calendar class="calendar panel" values={selectedDates} />
